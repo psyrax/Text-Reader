@@ -1,27 +1,35 @@
 <?php 
-$db = mysql_connect("localhost", "root", "");
-mysql_select_db("reader", $db);
-if(isset($_GET['id'])):
-	mysql_query('SET CHARACTER SET utf8');
-	$query = "SELECT * FROM f_reader WHERE id=".$_GET['id']." ORDER BY id ASC";
-	$results = mysql_query($query, $db) or die(mysql_error());
-	$contents = mysql_fetch_assoc($results);
-	$data=array();
-	$explo=explode("\n", $contents['content']);
-	$text="";
-	foreach ($explo as $paragraph) {
-		$text.="<p>".$paragraph."</p>";
-	}
-	$data['title']=$contents['title'];
-	$data['content']=$text;
-	echo json_encode($data);
-else:
-$query = "SELECT id FROM f_reader ORDER BY id ASC";
-	$results = mysql_query($query, $db) or die(mysql_error());
-	$idt=array();
-	while ($ids = mysql_fetch_assoc($results)){
-		array_push($idt, $ids['id']);
-	}
-	echo json_encode($idt);
-endif;
+try{
+	$user="root";
+	$pass="";
+	$db = new PDO('mysql:host=localhost;dbname=reader', $user, $pass, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
+	if(isset($_GET['id'])):
+		$query = $db->prepare('SELECT * FROM f_reader WHERE id = :id ORDER BY id ASC');
+		$query->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
+		$query->execute();
+
+		$row = $query->fetch(PDO::FETCH_OBJ);
+		$explo=explode("\n", $row->content);
+		$text="";
+		foreach ($explo as $paragraph) {
+			$text.="<p>".$paragraph."</p>";
+		}
+		$data['title']=$row->title;
+		$data['content']=$text;
+		echo json_encode($data);
+	else:
+		$query = $db->prepare('SELECT id FROM f_reader ORDER BY id ASC');
+		$query->execute();
+		$ids=array();
+		while($row = $query->fetch(PDO::FETCH_OBJ)){
+			array_push($ids, $row->id);
+		}
+		;
+		echo json_encode($ids);
+	endif;
+
+}
+catch(PDOException $e) {  
+    echo $e->getMessage();  
+}  
 ?>
