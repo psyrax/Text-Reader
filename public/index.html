@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0" />
+		<title>The Atman Wars</title>
+		<link href='http://fonts.googleapis.com/css?family=Jura:400,500,600,300' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Ropa+Sans' rel='stylesheet' type='text/css'>
+		<script src="http://code.jquery.com/jquery-1.7.2.min.js" type="text/javascript"></script>
+		<link href="normalize.css" media="screen, projection" rel="stylesheet" type="text/css" />
+		<link href="screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+	<body>
+		<div class="container">
+
+				<div class="nav">
+					<div class="pages" data-dir="up">
+						PREV
+					</div>
+					<div class="pager">
+						<span class="page"></span>/<span class="t_page"></span>
+					</div>
+					<div class="pages" data-dir="down">
+						NEXT
+					</div>
+					<hr />
+					<div class="caption">Sections</div>
+				</div>		
+
+				<div class="contents">
+					<div class="r_break" id="1" data-breaker="1"></div>
+					<div class="title"><h1></h1></div>
+					<div class="texter"></div>
+				</div>
+		</div>
+		<script>
+			var breaker=$(window).height();
+			var cur_break=1;
+			var page=1;
+			var pos_ , breaks, t_breaks, off, dest_;
+			$(document).ready(function(){
+				chapters();
+				change_("1");
+				$('.navi').live('click', function(event){
+					$('.navi').removeClass('active');
+					$(this).addClass('active');
+					var doko = $(this).data('input');
+					change_(doko);
+				})
+				
+				$('.pages').on('click', function(){
+					dire=$(this).data('dir');
+					if(dire=="up"){
+						if(page>1){
+							dest_=page-1;
+							off_=$('#'+dest_).offset().top;
+							$('html,body').animate({scrollTop:off_});
+						}
+					}
+					if(dire=="down"){
+						if(page<t_breaks){
+							dest_=page+1;
+							off_=$('#'+dest_).offset().top;
+							$('html,body').animate({scrollTop:off_});
+						}
+					}
+
+				})
+				$(window).scroll(function(){
+					pager();
+				})
+			});
+			function change_(doko){
+				$.ajax({
+						url: 'data.php?id=' + doko,
+						dataType:'json',
+						success: function(data){
+							breaker=$(window).height();
+							cur_break=2;
+							breaks=[0];
+							$('.texter').html(data.content);
+							$('.title > h1').html(data.title);
+							cutter();
+							pager();
+						}
+					});
+			}
+			function chapters(){
+				$.ajax({
+						url: 'data.php',
+						dataType:'json',
+						success:function(data){
+							$.each(data, function(index, value){
+								$('<div class="navi" data-input="'+value+'">'+value+'</div>').appendTo('.nav');
+								$('.navi').first().addClass('active');
+							})
+						}
+					});
+			}
+			function pager(){
+				r_break=[]
+				wpos_=window.pageYOffset;
+				$('.r_break').each(function(){
+					r_pos=$(this).offset().top;
+					r_break.push(r_pos);
+				})
+				$.each(r_break, function(index, value){
+					next_=index+1;
+					if(next_<r_break.length){
+						if(wpos_>=Math.floor(value)&&wpos_<=Math.floor(r_break[next_])){
+							page=index+1;
+							$('.page').html(page);
+						}
+					}
+				})
+				$('.nav').offset({top:wpos_+20});
+			}
+			function cutter(){
+				h_=0;
+				ht_=0;
+				$('.texter p').each(function(index){
+					pos_=$(this).offset();
+					h_=$(this).height();
+					ht_=ht_+h_;
+					if(ht_>$(window).height()){
+						$(this).before('<div class="r_break" id="'+ cur_break +'" data-breaker="' + cur_break+ '"></div>');
+						breaks.push(breaker);
+						breaker=breaker+$(window).height();
+						cur_break=cur_break+1;
+						ht_=$(this).height();
+					}
+				});
+				t_breaks=breaks.length;
+				last_=$('.texter p').last().offset().top;
+				margin_last=breaks[t_breaks-1]+$(window).height();
+				if(last_<margin_last){
+					filler=margin_last-last_;
+					$('.texter p').last().after('<div style="height:'+filler+'px"></div><div class="r_break" id="'+ cur_break +'" data-breaker="' + cur_break+ '"></div>')
+
+				}
+				$('.t_page').html(t_breaks);
+				$('html,body').scrollTop(0);
+			}
+		</script>
+	</body>
+</html>

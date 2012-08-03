@@ -1,0 +1,66 @@
+body{
+	font-family: 'Jura', sans-serif;
+}
+.nav{
+	width:50px;
+	overflow:hidden;
+	text-align: center;
+	display:inline-table;
+	vertical-align: top;
+	margin-top:20px;
+	margin-left: 10px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	transition:top .5s linear;
+	-moz-transition:top .5s linear; /* Firefox 4 */
+	-webkit-transition:top .5s linear; /* Safari and Chrome */
+	-o-transition:top .5s linear; /* Opera */
+	}
+.navi {
+	text-align: center;
+	color:#D8CAA8;
+	background-color:#363942;
+	margin:1px;	
+	cursor:pointer;
+	font-size: 3em;
+	width:48px;
+	height:48px;
+	transition:background-color .5s linear;
+	-moz-transition:background-color .5s linear; /* Firefox 4 */
+	-webkit-transition:background-color .5s linear; /* Safari and Chrome */
+	-o-transition:background-color .5s linear; /* Opera */
+}
+.pages{
+	text-align: center;
+	color:#D8CAA8;
+	background-color:#382513;
+	margin:1px;
+	position:relative;
+	cursor:pointer;
+	width:48px;
+	height:48px;
+	line-height:3em
+}
+
+.contents{
+	font-family: 'Ropa Sans', sans-serif;
+	line-height: 160%;
+	display:inline-table;
+	height:600px;
+	overflow: scroll;
+	width:650px;
+	margin-left: 20px;
+}
+.active{
+	background-color: #5C832F !important;
+}
+.caption{
+	font-size: .6em;
+}
+.r_break {
+	width:100%;
+}
